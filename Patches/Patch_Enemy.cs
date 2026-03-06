@@ -3,7 +3,7 @@
 namespace TownArsenal.Patches
 {
     [HarmonyPatch(typeof(Enemy), "DoAttackDamage")]
-    internal static class Patch_Enemy
+    internal static class Patch_enemy
     {
         private static float SpeedIncrement;
         private static float SpeedMaximum;
@@ -13,7 +13,7 @@ namespace TownArsenal.Patches
 
         private static bool Enabled = PluginConfig.ConfigMeleeEnabled.Value && !NetworkManager.IsMultiplayer;
 
-        static Patch_Enemy()
+        static Patch_enemy()
         {
             SpeedIncrement = PluginConfig.ConfigMeleeSpeed.Value;
             SpeedMaximum = PluginConfig.ConfigMeleeSpeedMaximum.Value;

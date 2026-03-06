@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 
+
+#nullable enable
 namespace TownArsenal.Patches
 {
     [HarmonyPatch(typeof(PTTRPlayer), "EnemyKilled")]
@@ -10,6 +12,10 @@ namespace TownArsenal.Patches
 
         private static float AtkSpeedIncrement;
         private static float AtkSpeedMaximum;
+
+        public static float? BaseSpeed = null;
+        public static float? BaseAtkSpeed = null;
+        public static PTTRPlayer.Class? TargetClass = null;
 
         static Patch_player()
         {
@@ -28,6 +34,10 @@ namespace TownArsenal.Patches
                 return;
             }
 
+            TargetClass ??= __instance.playerClassObj;
+            BaseSpeed ??= __instance.playerClassObj.speedMultiplier;
+            BaseAtkSpeed ??= __instance.playerClassObj.attackSpeedMultiplier;
+
             var baseAtk = __instance.playerClassObj.attackSpeedMultiplier;
             baseAtk += AtkSpeedIncrement;
 
@@ -42,6 +52,31 @@ namespace TownArsenal.Patches
             if (baseSpeed <= SpeedMaximum)
             {
                 __instance.playerClassObj.speedMultiplier = baseSpeed;
+            }
+
+        }
+    }
+
+    [HarmonyPatch(typeof(LoadingScreen), "Awake")]
+    internal static class Patch_player_reset
+    {
+        static void Prefix()
+        {
+            if (Patch_player.TargetClass == null)
+            {
+                return;
+            }
+
+            if (Patch_player.BaseSpeed != null)
+            {
+                Patch_player.TargetClass.speedMultiplier = (float)Patch_player.BaseSpeed;
+                Patch_player.BaseSpeed = null;
+            }
+
+            if (Patch_player.BaseAtkSpeed != null)
+            {
+                Patch_player.TargetClass.attackSpeedMultiplier = (float)Patch_player.BaseAtkSpeed;
+                Patch_player.BaseAtkSpeed = null;
             }
 
         }
